@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Market Pulse Dashboard</title>
+    <link rel="stylesheet" href="/styles.css?v=20260515-1745">
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <h1>Market Pulse</h1>
+        <p id="generatedAt">Loading market analysis...</p>
+      </div>
+      <div class="topbar-actions">
+        <button id="refreshButton" class="icon-button" title="Refresh analysis" aria-label="Refresh analysis">R</button>
+        <button id="exitButton" class="exit-button" title="Stop Market Pulse" aria-label="Stop Market Pulse">Exit</button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section id="warningPanel" class="panel warning-panel" hidden>
+        <div class="panel-heading">
+          <h2>Data Warnings</h2>
+        </div>
+        <ul id="warningList" class="evidence-list"></ul>
+      </section>
+
+      <section class="summary-grid" aria-label="Portfolio summary">
+        <article class="metric">
+          <span>Total Equity</span>
+          <strong id="totalEquity">$0.00</strong>
+        </article>
+        <article class="metric">
+          <span>ROI</span>
+          <strong id="roiStatus">n/a</strong>
+        </article>
+        <article class="metric">
+          <span>Total P/L</span>
+          <strong id="totalPnl">$0.00</strong>
+        </article>
+        <article class="metric">
+          <span>Cash</span>
+          <strong id="cashBalance">$0.00</strong>
+        </article>
+        <article class="metric">
+          <span>Target Equity</span>
+          <strong id="targetEquity">n/a</strong>
+        </article>
+        <article class="metric">
+          <span>Daily Pace</span>
+          <strong id="dailyPace">n/a</strong>
+        </article>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <h2>Data Store</h2>
+          <span id="databaseRetentionBadge" class="badge">5 days</span>
+        </div>
+        <div class="trade-grid">
+          <div>
+            <span class="label">SQLite DB</span>
+            <strong id="databasePath">...</strong>
+          </div>
+          <div>
+            <span class="label">Crypto Candles</span>
+            <strong id="cryptoCandleCount">...</strong>
+          </div>
+          <div>
+            <span class="label">Crypto Range</span>
+            <strong id="cryptoDataRange">...</strong>
+          </div>
+          <div>
+            <span class="label">Analysis Runs</span>
+            <strong id="analysisRunCount">...</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="decision-panel">
+        <div class="panel-heading">
+          <h2>Trade Posture</h2>
+          <span id="confidenceBadge" class="badge">...</span>
+        </div>
+        <div class="trade-grid">
+          <div>
+            <span class="label">Bias</span>
+            <strong id="tradeBias">...</strong>
+          </div>
+          <div>
+            <span class="label">Regime</span>
+            <strong id="tradeRegime">...</strong>
+          </div>
+          <div>
+            <span class="label">Probability</span>
+            <strong id="tradeProbability">...</strong>
+          </div>
+          <div>
+            <span class="label">Reference</span>
+            <strong id="tradeReference">...</strong>
+          </div>
+        </div>
+        <p id="tradePosture" class="thesis"></p>
+        <dl class="decision-list">
+          <div>
+            <dt>Entry Trigger</dt>
+            <dd id="entryTrigger"></dd>
+          </div>
+          <div>
+            <dt>Invalidation</dt>
+            <dd id="tradeInvalidation"></dd>
+          </div>
+          <div>
+            <dt>Risk Note</dt>
+            <dd id="riskNote"></dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <h2>Regulatory Context</h2>
+          <span id="regulatoryStatusBadge" class="badge">Checking</span>
+        </div>
+        <div id="regulatoryRows" class="regulatory-grid"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <h2>ROI Goal Plan</h2>
+          <span id="goalPaceBadge" class="badge">Not set</span>
+        </div>
+        <div class="trade-grid">
+          <div>
+            <span class="label">Goal Profit</span>
+            <strong id="goalProfit">n/a</strong>
+          </div>
+          <div>
+            <span class="label">Remaining</span>
+            <strong id="goalRemaining">n/a</strong>
+          </div>
+          <div>
+            <span class="label">Days Left</span>
+            <strong id="goalDaysLeft">n/a</strong>
+          </div>
+          <div>
+            <span class="label">Progress</span>
+            <strong id="goalProgress">n/a</strong>
+          </div>
+        </div>
+        <p id="goalNarrative" class="thesis"></p>
+        <table>
+          <thead>
+            <tr>
+              <th>Candidate</th>
+              <th>Price</th>
+              <th>24h</th>
+              <th>5d</th>
+              <th>RSI</th>
+              <th>Trend</th>
+              <th>Score</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="candidateRows"></tbody>
+        </table>
+      </section>
+
+      <section>
+        <div class="section-heading">
+          <h2>Tracked Assets</h2>
+          <span id="dataWindowBadge" class="badge">5 days</span>
+        </div>
+        <p class="section-note">Track a recommendation to promote it into this chart set and include it in the posture view.</p>
+        <div id="assetGrid" class="asset-grid"></div>
+      </section>
+
+      <section class="two-column">
+        <div class="panel">
+          <div class="panel-heading">
+            <h2>Top Currency Movers</h2>
+            <span id="moverExclusions" class="badge">...</span>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Asset</th>
+                <th>24h</th>
+                <th>Price</th>
+                <th>24h Volume</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="moverRows"></tbody>
+          </table>
+        </div>
+
+        <div class="panel">
+          <div class="panel-heading">
+            <h2>Top 10 Traded</h2>
+            <span class="badge">Ex-portfolio</span>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Asset</th>
+                <th>24h Volume</th>
+                <th>24h</th>
+                <th>Price</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="tradedRows"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="two-column">
+        <div class="panel">
+          <div class="panel-heading">
+            <h2>Regime Probabilities</h2>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Regime</th>
+                <th>Probability</th>
+                <th>Confidence</th>
+              </tr>
+            </thead>
+            <tbody id="probabilityRows"></tbody>
+          </table>
+        </div>
+
+        <div class="panel">
+          <div class="panel-heading">
+            <h2>Evidence</h2>
+          </div>
+          <ul id="evidenceList" class="evidence-list"></ul>
+        </div>
+      </section>
+
+      <section class="ledger-section">
+        <div class="section-heading">
+          <h2>Ledger</h2>
+          <span id="ledgerStatusBadge" class="badge">Checking</span>
+        </div>
+        <div class="ledger-grid">
+          <form id="capitalForm" class="panel form-panel">
+            <h3>Capital Goal</h3>
+            <label>
+              Initial capital
+              <input id="initialCapital" name="initial_capital" type="number" min="0" step="0.01" required>
+            </label>
+            <label>
+              Target ROI %
+              <input id="targetRoi" name="target_roi_pct" type="number" min="0" step="0.01" required>
+            </label>
+            <label>
+              Target days
+              <input id="targetDays" name="target_days" type="number" min="1" step="1" required>
+            </label>
+            <button type="submit" title="Save capital goal">Save Goal</button>
+          </form>
+
+          <form id="transactionForm" class="panel form-panel">
+            <h3>Transaction</h3>
+            <p id="orderBudget" class="section-note">Available cash: n/a</p>
+            <div class="form-grid">
+              <label>
+                Side
+                <select name="side" required>
+                  <option value="BUY">BUY</option>
+                  <option value="SELL">SELL</option>
+                </select>
+              </label>
+              <label>
+                Asset
+                <select id="assetSelect" name="asset" required></select>
+              </label>
+              <label>
+                Quantity
+                <input name="quantity" type="number" min="0" step="0.00000001" required>
+              </label>
+              <label>
+                Price
+                <input id="priceInput" name="price" type="number" min="0" step="0.01" required>
+              </label>
+              <label>
+                Fees
+                <input name="fees" type="number" min="0" step="0.01" value="0">
+              </label>
+              <label>
+                Time
+                <input id="transactionTime" name="timestamp" type="datetime-local">
+              </label>
+            </div>
+            <label>
+              Notes
+              <input name="notes" type="text" maxlength="120">
+            </label>
+            <p id="orderEstimate" class="section-note">Estimated order cost: n/a</p>
+            <button type="submit" title="Add transaction">Add</button>
+          </form>
+        </div>
+
+        <div class="two-column">
+          <div class="panel">
+            <div class="panel-heading">
+              <h2>Ledger Math</h2>
+            </div>
+            <dl class="decision-list">
+              <div>
+                <dt>Cash</dt>
+                <dd id="ledgerCashMath">n/a</dd>
+              </div>
+              <div>
+                <dt>Total Equity</dt>
+                <dd id="ledgerEquityMath">n/a</dd>
+              </div>
+              <div>
+                <dt>Total P/L</dt>
+                <dd id="ledgerPnlMath">n/a</dd>
+              </div>
+              <div>
+                <dt>Reconciliation</dt>
+                <dd id="ledgerReconciliation">n/a</dd>
+              </div>
+            </dl>
+          </div>
+
+          <div class="panel">
+            <div class="panel-heading">
+              <h2>Open Positions</h2>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Asset</th>
+                  <th>Qty</th>
+                  <th>Avg Cost</th>
+                  <th>Value</th>
+                  <th>Unrealized P/L</th>
+                </tr>
+              </thead>
+              <tbody id="holdingRows"></tbody>
+            </table>
+          </div>
+
+          <div class="panel ledger-transactions-panel">
+            <div class="panel-heading">
+              <h2>Transactions</h2>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Time</th>
+                  <th>Side</th>
+                  <th>Asset</th>
+                  <th>Qty</th>
+                  <th>Price</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="transactionRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div id="toast" role="status" aria-live="polite"></div>
+    <script src="/dashboard.js?v=20260515-1745"></script>
+  </body>
+</html>

@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Data and Logs
+*.db
+*.log
+ledger.json
+ledger.backup_*.json
+reports/
+
+# Configuration
+config.json
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
